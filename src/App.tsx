@@ -1,122 +1,113 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Chess } from 'chess.js'
+import { Chessboard } from 'react-chessboard'
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+const LAST_MOVE = { background: 'rgba(235, 205, 70, 0.55)' }
+const CHECK = {
+  background:
+    'radial-gradient(circle, rgba(225, 60, 60, 0.95) 0%, rgba(225, 60, 60, 0) 72%)',
 }
 
-export default App
+export default function App() {
+  const [game] = useState(() => new Chess())
+  const [fen, setFen] = useState(game.fen())
+
+  function onPieceDrop({
+    sourceSquare,
+    targetSquare,
+  }: {
+    sourceSquare: string
+    targetSquare: string | null
+  }) {
+    if (!targetSquare) return false
+    try {
+      game.move({ from: sourceSquare, to: targetSquare, promotion: 'q' })
+      setFen(game.fen())
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  function undo() {
+    game.undo()
+    setFen(game.fen())
+  }
+
+  function newGame() {
+    game.reset()
+    setFen(game.fen())
+  }
+
+  // Highlights: the last move, plus a red glow under a king in check.
+  const squareStyles: Record<string, React.CSSProperties> = {}
+  const moves = game.history({ verbose: true })
+  const last = moves[moves.length - 1]
+  if (last) {
+    squareStyles[last.from] = LAST_MOVE
+    squareStyles[last.to] = LAST_MOVE
+  }
+  if (game.inCheck()) {
+    for (const row of game.board()) {
+      for (const piece of row) {
+        if (piece && piece.type === 'k' && piece.color === game.turn()) {
+          squareStyles[piece.square] = CHECK
+        }
+      }
+    }
+  }
+
+  // Move list: group moves in pairs (white, black).
+  const san = moves.map((m) => m.san)
+  const rows: { number: number; white: string; black?: string }[] = []
+  for (let i = 0; i < san.length; i += 2) {
+    rows.push({ number: i / 2 + 1, white: san[i], black: san[i + 1] })
+  }
+
+  let status = game.turn() === 'w' ? 'White to move' : 'Black to move'
+  if (game.isCheckmate()) {
+    status = `Checkmate. ${game.turn() === 'w' ? 'Black' : 'White'} wins`
+  } else if (game.isDraw()) {
+    status = 'Draw'
+  } else if (game.inCheck()) {
+    status += ' (check)'
+  }
+
+  return (
+    <main className="app">
+      <h1>Knightly</h1>
+      <div className="layout">
+        <div className="board">
+          <Chessboard
+            options={{
+              position: fen,
+              onPieceDrop,
+              squareStyles,
+              lightSquareStyle: { backgroundColor: '#ebe3cf' },
+              darkSquareStyle: { backgroundColor: '#6f9a82' },
+            }}
+          />
+        </div>
+
+        <aside className="panel">
+          <h2>Moves</h2>
+          <ol className="moves">
+            {rows.length === 0 && <li className="empty">No moves yet</li>}
+            {rows.map((r) => (
+              <li key={r.number}>
+                <span className="num">{r.number}.</span>
+                <span>{r.white}</span>
+                <span>{r.black ?? ''}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="status">{status}</p>
+          <div className="buttons">
+            <button onClick={undo}>Undo</button>
+            <button onClick={newGame}>New game</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  )
+}
