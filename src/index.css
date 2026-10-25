@@ -1,100 +1,266 @@
+:root {
+  --bg: #14181b;
+  --panel: #1d2327;
+  --line: #2b343a;
+  --text: #eef1ee;
+  --muted: #a9b5ae;
+  --accent: #8fcf9a;
+  --btn: #262e33;
+  --btn-line: #3a464d;
+  --sq-light: #ebe3cf;
+  --sq-dark: #6f9a82;
+}
+
+:root[data-theme='walnut'] {
+  --bg: #1c1714;
+  --panel: #261f1a;
+  --line: #3a2f27;
+  --muted: #c0b3a2;
+  --accent: #e0a96d;
+  --btn: #33291f;
+  --btn-line: #4d3f33;
+  --sq-light: #d9b98c;
+  --sq-dark: #9a6a47;
+}
+
+html {
+  /* Scale everything with the window, so zooming out fills the screen */
+  font-size: clamp(16px, 1.67vmin, 120px);
+}
+
 body {
   margin: 0;
-  background: #14181b;
-  color: #eef1ee;
+  background: var(--bg);
+  color: var(--text);
   font-family: system-ui, sans-serif;
 }
 
 .app {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 24px;
 }
 
-.layout {
+.topbar {
+  height: 4rem;
+  flex: none;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 2rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.logo {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.stage {
+  --panel-w: clamp(18rem, 26vw, 30rem);
+  --gap: 2rem;
+  --size: min(calc(100vh - 9rem),
+      calc(100vw - var(--panel-w) - var(--gap) - 3rem));
+  flex: 1;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 24px;
-  width: 100%;
+  gap: var(--gap);
+  padding: 1.5rem;
 }
 
 .board {
-  width: min(92vw, 560px);
+  position: relative;
+  flex: none;
+  width: var(--size);
 }
 
 .panel {
-  width: min(92vw, 320px);
+  flex: none;
+  width: var(--panel-w);
+  height: var(--size);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  background: #1d2327;
-  border: 1px solid #2b343a;
-  border-radius: 16px;
+  gap: 0.9rem;
+  padding: 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
 }
 
 .panel h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.15rem;
 }
 
 .moves {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   list-style: none;
   margin: 0;
   padding: 0;
-  min-height: 160px;
-  max-height: 320px;
-  overflow-y: auto;
+  font-size: 1rem;
 }
 
 .moves li {
   display: grid;
-  grid-template-columns: 36px 1fr 1fr;
-  gap: 8px;
-  padding: 3px 0;
+  grid-template-columns: 2.5rem 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
 }
 
 .moves .num,
-.moves .empty {
-  color: #a9b5ae;
+.moves .empty,
+.label {
+  color: var(--muted);
 }
 
 .status {
-  font-size: 17px;
+  font-size: 1.1rem;
   margin: 0;
 }
-
-.buttons {
-  display: flex;
-  gap: 12px;
-}
-
-button {
-  min-height: 44px;
-  padding: 0 20px;
-  border-radius: 10px;
-  border: 1px solid #3a464d;
-  background: #262e33;
-  color: #eef1ee;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 
 .toggle {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 32px;
+  gap: 0.6rem;
+  min-height: 2rem;
   cursor: pointer;
 }
 
 .toggle input {
-  width: 18px;
-  height: 18px;
-  accent-color: #8fcf9a;
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--accent);
+}
+
+.label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.swatches {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.swatch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.swatch.on {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.chips {
+  display: flex;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.chips i {
+  display: block;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+button {
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--btn-line);
+  background: var(--btn);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.credit {
+  flex: none;
+  padding: 0 2rem 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Pawn promotion picker */
+.promo-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 14, 16, 0.6);
+  border-radius: 0.5rem;
+}
+
+.promo-card {
+  background: var(--panel);
+  border: 1px solid var(--btn-line);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.promo-card p {
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+.promo-choices {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.promo-btn {
+  width: 5rem;
+  height: 5rem;
+  padding: 0.25rem;
+  background: var(--sq-dark);
+}
+
+.promo-btn img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Phones and narrow windows: board on top, panel below */
+@media (max-width: 900px) {
+  .stage {
+    --size: min(calc(100vw - 2rem), calc(100vh - 9rem));
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 1rem;
+  }
+
+  .panel {
+    width: var(--size);
+    height: auto;
+  }
+
+  .moves {
+    flex: none;
+    max-height: 10rem;
+  }
 }

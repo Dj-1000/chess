@@ -1,11 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Chess, type Square } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
+import { APP_NAME } from './config'
+import { THEMES, type ThemeId } from './themes'
+import { makePieces } from './pieces'
 
-const LIGHT = '#ebe3cf'
-const DARK = '#6f9a82'
-
-// Each highlight is a colored layer drawn on top of the square's own color.
 const tint = (c: string) => `linear-gradient(${c}, ${c})`
 const LAYER = {
   last: tint('rgba(235, 205, 70, 0.55)'),
@@ -16,11 +15,21 @@ const LAYER = {
   ring: 'radial-gradient(circle, transparent 62%, rgba(20, 30, 25, 0.35) 64%)',
 }
 
-// a1 is a dark square; this works out the base color of any square.
-function baseColor(sq: string) {
-  const file = sq.charCodeAt(0) - 97
-  const rank = Number(sq[1]) - 1
-  return (file + rank) % 2 === 1 ? LIGHT : DARK
+const PROMOTION_CHOICES = [
+  { id: 'Q', name: 'queen' },
+  { id: 'R', name: 'rook' },
+  { id: 'B', name: 'bishop' },
+  { id: 'N', name: 'knight' },
+]
+
+function loadTheme(): ThemeId {
+  try {
+    const saved = localStorage.getItem('theme')
+    if (saved === 'classic' || saved === 'walnut') return saved
+  } catch {
+    // storage unavailable: use the default
+  }
+  return 'classic'
 }
 
 export default function App() {
@@ -28,20 +37,56 @@ export default function App() {
   const [fen, setFen] = useState(game.fen())
   const [selected, setSelected] = useState<string | null>(null)
   const [showLegal, setShowLegal] = useState(true)
+  const [pending, setPending] = useState<{ from: string; to: string } | null>(
+    null,
+  )
+  const [themeId, setThemeId] = useState<ThemeId>(loadTheme)
 
-  function makeMove(from: string, to: string) {
+  const theme = THEMES[themeId]
+  const pieces = useMemo(() => makePieces(theme.pieceSet), [theme.pieceSet])
+
+  useEffect(() => {
+    document.title = APP_NAME
+  }, [])
+
+  // Apply the theme to the whole page and remember it for next visit
+  useEffect(() => {
+    document.documentElement.dataset.theme = themeId
     try {
-      // For now every promotion becomes a queen. The picker comes next.
-      game.move({ from, to, promotion: 'q' })
+      localStorage.setItem('theme', themeId)
+    } catch {
+      // ignore
+    }
+  }, [themeId])
+
+  function baseColor(sq: string) {
+    const file = sq.charCodeAt(0) - 97
+    const rank = Number(sq[1]) - 1
+    return (file + rank) % 2 === 1 ? theme.light : theme.dark
+  }
+
+  function needsPromotion(from: string, to: string) {
+    return game
+      .moves({ square: from as Square, verbose: true })
+      .some((m) => m.to === to && m.promotion)
+  }
+
+  function makeMove(from: string, to: string, promotion?: string) {
+    if (!promotion && needsPromotion(from, to)) {
+      setPending({ from, to })
+      return false
+    }
+    try {
+      game.move({ from, to, promotion })
       setFen(game.fen())
       setSelected(null)
+      setPending(null)
       return true
     } catch {
-      return false // illegal move
+      return false
     }
   }
 
-  // Drag and drop
   function onPieceDrop({
     sourceSquare,
     targetSquare,
@@ -53,7 +98,6 @@ export default function App() {
     return makeMove(sourceSquare, targetSquare)
   }
 
-  // Click a piece, then click where it should go
   function onSquareClick({ square }: { square: string }) {
     if (selected && legalTargets.some((m) => m.to === square)) {
       makeMove(selected, square)
@@ -71,20 +115,20 @@ export default function App() {
     game.undo()
     setFen(game.fen())
     setSelected(null)
+    setPending(null)
   }
 
   function newGame() {
     game.reset()
     setFen(game.fen())
     setSelected(null)
+    setPending(null)
   }
 
-  // Where the selected piece can legally go
   const legalTargets = selected
     ? game.moves({ square: selected as Square, verbose: true })
     : []
 
-  // Collect highlight layers per square (first in the list is drawn on top)
   const layers: Record<string, string[]> = {}
   const add = (sq: string, layer: string) => {
     layers[sq] = [...(layers[sq] ?? []), layer]
@@ -121,7 +165,6 @@ export default function App() {
     }
   }
 
-  // Move list: group moves in pairs (white, black)
   const san = moves.map((m) => m.san)
   const rows: { number: number; white: string; black?: string }[] = []
   for (let i = 0; i < san.length; i += 2) {
@@ -137,10 +180,20 @@ export default function App() {
     status += ' (check)'
   }
 
+  const side = game.turn() // whose pieces to show in the promotion picker
+
   return (
     <main className="app">
-      <h1>Knightly</h1>
-      <div className="layout">
+      <header className="topbar">
+        <img
+          className="logo"
+          src={`${import.meta.env.BASE_URL}favicon.svg`}
+          alt=""
+        />
+        <span>{APP_NAME}</span>
+      </header>
+
+      <div className="stage">
         <div className="board">
           <Chessboard
             options={{
@@ -148,10 +201,38 @@ export default function App() {
               onPieceDrop,
               onSquareClick,
               squareStyles,
-              lightSquareStyle: { backgroundColor: LIGHT },
-              darkSquareStyle: { backgroundColor: DARK },
+              pieces,
+              lightSquareStyle: { backgroundColor: theme.light },
+              darkSquareStyle: { backgroundColor: theme.dark },
             }}
           />
+
+          {pending && (
+            <div className="promo-overlay">
+              <div className="promo-card" role="dialog" aria-label="Promote pawn">
+                <p>Promote pawn to</p>
+                <div className="promo-choices">
+                  {PROMOTION_CHOICES.map((c) => (
+                    <button
+                      key={c.id}
+                      className="promo-btn"
+                      aria-label={`Promote to ${c.name}`}
+                      onClick={() => makeMove(pending.from, pending.to, c.id.toLowerCase())}
+                    >
+                      <img
+                        src={`${import.meta.env.BASE_URL}pieces/${theme.pieceSet}/${side}${c.id}.png`}
+                        alt=""
+                        draggable={false}
+                      />
+                    </button>
+                  ))}
+                </div>
+                <button className="cancel" onClick={() => setPending(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <aside className="panel">
@@ -167,6 +248,7 @@ export default function App() {
             ))}
           </ol>
           <p className="status">{status}</p>
+
           <label className="toggle">
             <input
               type="checkbox"
@@ -175,12 +257,37 @@ export default function App() {
             />
             Show legal moves
           </label>
+
+          <div className="theme-picker">
+            <span className="label">Board theme</span>
+            <div className="swatches">
+              {(Object.keys(THEMES) as ThemeId[]).map((id) => (
+                <button
+                  key={id}
+                  className={`swatch ${id === themeId ? 'on' : ''}`}
+                  aria-pressed={id === themeId}
+                  onClick={() => setThemeId(id)}
+                >
+                  <span className="chips">
+                    <i style={{ background: THEMES[id].light }} />
+                    <i style={{ background: THEMES[id].dark }} />
+                  </span>
+                  {THEMES[id].name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="buttons">
             <button onClick={undo}>Undo</button>
             <button onClick={newGame}>New game</button>
           </div>
         </aside>
       </div>
+
+      <footer className="credit">
+        Pieces by Toan Hoang (MIT license)
+      </footer>
     </main>
   )
 }
