@@ -1,8 +1,11 @@
-import { useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { Chess, type Square } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
 import { THEMES, type ThemeId } from './themes'
 import { makePieces } from './pieces'
+import { Engine } from './engine'
+import type { Level } from './levels'
+import ConfirmDialog from './ConfirmDialog'
 
 const tint = (c: string) => `linear-gradient(${c}, ${c})`
 const LAYER = {
@@ -22,12 +25,25 @@ const PROMOTION_CHOICES = [
 ]
 
 type Props = {
+  mode: 'pass' | 'computer'
+  level?: Level
+  playerColor?: 'w' | 'b'
   themeId: ThemeId
   onThemeChange: (id: ThemeId) => void
   onExit: () => void
 }
 
-export default function Game({ themeId, onThemeChange, onExit }: Props) {
+export default function Game({
+  mode,
+  level,
+  playerColor,
+  themeId,
+  onThemeChange,
+  onExit,
+}: Props) {
+  const vsComputer = mode === 'computer'
+  const me = playerColor ?? 'w'
+
   const [game] = useState(() => new Chess())
   const [fen, setFen] = useState(game.fen())
   const [selected, setSelected] = useState<string | null>(null)
@@ -35,20 +51,74 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
   const [pending, setPending] = useState<{ from: string; to: string } | null>(
     null,
   )
-  // Pass and play: flip the board by hand, or automatically after each move
   const [flipped, setFlipped] = useState(false)
   const [autoFlip, setAutoFlip] = useState(false)
+  const [confirmLeave, setConfirmLeave] = useState(false)
+
+  // Computer opponent
+  const [engine, setEngine] = useState<Engine | null>(null)
+  const [thinking, setThinking] = useState(false)
+  const [engineError, setEngineError] = useState<string | null>(null)
+  const [gameId, setGameId] = useState(0)
 
   const theme = THEMES[themeId]
   const pieces = useMemo(() => makePieces(theme.pieceSet), [theme.pieceSet])
 
-  const orientation: 'white' | 'black' = autoFlip
-    ? game.turn() === 'w'
+  // Start the engine when a computer game begins, stop it when leaving
+  useEffect(() => {
+    if (!vsComputer || !level) return
+    const e = new Engine(level)
+    e.onError = (message) => {
+      setEngineError(message)
+      setThinking(false)
+    }
+    setEngine(e)
+    return () => {
+      e.destroy()
+      setEngine(null)
+    }
+  }, [vsComputer, level])
+
+  // When it is the computer's turn, ask the engine for a move
+  useEffect(() => {
+    if (!engine || game.isGameOver() || game.turn() === me) return
+    let stale = false
+    setThinking(true)
+    engine
+      .bestMove(game.fen())
+      .then((uci) => {
+        if (stale) return
+        try {
+          game.move({
+            from: uci.slice(0, 2),
+            to: uci.slice(2, 4),
+            promotion: uci[4],
+          })
+          setFen(game.fen())
+        } catch {
+          setEngineError('The engine returned a move that could not be played.')
+        }
+        setThinking(false)
+      })
+      .catch(() => {
+        if (!stale) setThinking(false)
+      })
+    return () => {
+      stale = true
+    }
+  }, [fen, engine, gameId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const orientation: 'white' | 'black' = vsComputer
+    ? me === 'w'
       ? 'white'
       : 'black'
-    : flipped
-      ? 'black'
-      : 'white'
+    : autoFlip
+      ? game.turn() === 'w'
+        ? 'white'
+        : 'black'
+      : flipped
+        ? 'black'
+        : 'white'
 
   function baseColor(sq: string) {
     const file = sq.charCodeAt(0) - 97
@@ -63,6 +133,7 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
   }
 
   function makeMove(from: string, to: string, promotion?: string) {
+    if (vsComputer && game.turn() !== me) return false
     if (!promotion && needsPromotion(from, to)) {
       setPending({ from, to })
       return false
@@ -90,6 +161,7 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
   }
 
   function onSquareClick({ square }: { square: string }) {
+    if (vsComputer && game.turn() !== me) return
     if (selected && legalTargets.some((m) => m.to === square)) {
       makeMove(selected, square)
       return
@@ -104,6 +176,8 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
 
   function undo() {
     game.undo()
+    // Against the computer, also take back its reply
+    if (vsComputer && game.turn() !== me) game.undo()
     setFen(game.fen())
     setSelected(null)
     setPending(null)
@@ -114,16 +188,12 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
     setFen(game.fen())
     setSelected(null)
     setPending(null)
+    setGameId((g) => g + 1)
   }
 
   function leave() {
-    if (
-      game.history().length > 0 &&
-      !window.confirm('Leave this game? Your progress will be lost.')
-    ) {
-      return
-    }
-    onExit()
+    if (game.history().length > 0) setConfirmLeave(true)
+    else onExit()
   }
 
   const legalTargets = selected
@@ -172,16 +242,34 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
     rows.push({ number: i / 2 + 1, white: san[i], black: san[i + 1] })
   }
 
-  let status = game.turn() === 'w' ? 'White to move' : 'Black to move'
-  if (game.isCheckmate()) {
-    status = `Checkmate. ${game.turn() === 'w' ? 'Black' : 'White'} wins`
+  let status: string
+  if (engineError) {
+    status = engineError
+  } else if (game.isCheckmate()) {
+    const loser = game.turn()
+    status = vsComputer
+      ? loser === me
+        ? 'Checkmate. The computer wins'
+        : 'Checkmate. You win!'
+      : `Checkmate. ${loser === 'w' ? 'Black' : 'White'} wins`
   } else if (game.isDraw()) {
     status = 'Draw'
-  } else if (game.inCheck()) {
-    status += ' (check)'
+  } else if (vsComputer) {
+    status = thinking
+      ? 'Computer is thinking…'
+      : game.turn() === me
+        ? 'Your move'
+        : 'Computer to move'
+    if (game.inCheck() && !thinking) status += ' (check)'
+  } else {
+    status = game.turn() === 'w' ? 'White to move' : 'Black to move'
+    if (game.inCheck()) status += ' (check)'
   }
 
   const side = game.turn()
+  const canUndo = vsComputer
+    ? !thinking && moves.length > (me === 'w' ? 0 : 1)
+    : moves.length > 0
 
   return (
     <div className="stage">
@@ -230,7 +318,7 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
       </div>
 
       <aside className="panel">
-        <h2>Pass and play</h2>
+        <h2>{vsComputer ? `vs Computer · ${level?.name}` : 'Pass and play'}</h2>
         <ol className="moves">
           {rows.length === 0 && <li className="empty">No moves yet</li>}
           {rows.map((r) => (
@@ -252,14 +340,16 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
           Show legal moves
         </label>
 
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={autoFlip}
-            onChange={(e) => setAutoFlip(e.target.checked)}
-          />
-          Flip board after each move
-        </label>
+        {!vsComputer && (
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={autoFlip}
+              onChange={(e) => setAutoFlip(e.target.checked)}
+            />
+            Flip board after each move
+          </label>
+        )}
 
         <div className="theme-picker">
           <span className="label">Board theme</span>
@@ -282,14 +372,29 @@ export default function Game({ themeId, onThemeChange, onExit }: Props) {
         </div>
 
         <div className="buttons">
-          <button onClick={undo}>Undo</button>
-          <button onClick={() => setFlipped((f) => !f)} disabled={autoFlip}>
-            Flip board
+          <button onClick={undo} disabled={!canUndo}>
+            Undo
           </button>
+          {!vsComputer && (
+            <button onClick={() => setFlipped((f) => !f)} disabled={autoFlip}>
+              Flip board
+            </button>
+          )}
           <button onClick={newGame}>New game</button>
           <button onClick={leave}>Menu</button>
         </div>
       </aside>
+
+      {confirmLeave && (
+        <ConfirmDialog
+          title="Leave this game?"
+          message="Your progress in this game will be lost."
+          confirmLabel="Leave game"
+          cancelLabel="Keep playing"
+          onConfirm={onExit}
+          onCancel={() => setConfirmLeave(false)}
+        />
+      )}
     </div>
   )
 }

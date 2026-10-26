@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { APP_NAME } from './config'
 import type { ThemeId } from './themes'
+import type { Level } from './levels'
 import Home from './Home'
+import Setup from './Setup'
 import Game from './Game'
 
 function loadTheme(): ThemeId {
@@ -14,15 +16,20 @@ function loadTheme(): ThemeId {
   return 'classic'
 }
 
+type Screen = 'home' | 'setup' | 'pass' | 'computer'
+
 export default function App() {
-  const [screen, setScreen] = useState<'home' | 'pass'>('home')
+  const [screen, setScreen] = useState<Screen>('home')
   const [themeId, setThemeId] = useState<ThemeId>(loadTheme)
+  const [config, setConfig] = useState<{ level: Level; color: 'w' | 'b' } | null>(
+    null,
+  )
+  const [gameKey, setGameKey] = useState(0)
 
   useEffect(() => {
     document.title = APP_NAME
   }, [])
 
-  // Apply the theme to the whole page and remember it for next visit
   useEffect(() => {
     document.documentElement.dataset.theme = themeId
     try {
@@ -31,6 +38,8 @@ export default function App() {
       // ignore
     }
   }, [themeId])
+
+  const goHome = () => setScreen('home')
 
   return (
     <main className="app">
@@ -43,17 +52,55 @@ export default function App() {
         <span>{APP_NAME}</span>
       </header>
 
-      {screen === 'home' ? (
-        <Home onPlay={(mode) => setScreen(mode)} />
-      ) : (
-        <Game
-          themeId={themeId}
-          onThemeChange={setThemeId}
-          onExit={() => setScreen('home')}
+      {screen === 'home' && (
+        <Home
+          onPlay={(mode) => {
+            if (mode === 'pass') {
+              setGameKey((k) => k + 1)
+              setScreen('pass')
+            } else {
+              setScreen('setup')
+            }
+          }}
         />
       )}
 
-      <footer className="credit">Pieces by Toan Hoang (MIT license)</footer>
+      {screen === 'setup' && (
+        <Setup
+          onBack={goHome}
+          onStart={(level, color) => {
+            setConfig({ level, color })
+            setGameKey((k) => k + 1)
+            setScreen('computer')
+          }}
+        />
+      )}
+
+      {screen === 'pass' && (
+        <Game
+          key={gameKey}
+          mode="pass"
+          themeId={themeId}
+          onThemeChange={setThemeId}
+          onExit={goHome}
+        />
+      )}
+
+      {screen === 'computer' && config && (
+        <Game
+          key={gameKey}
+          mode="computer"
+          level={config.level}
+          playerColor={config.color}
+          themeId={themeId}
+          onThemeChange={setThemeId}
+          onExit={goHome}
+        />
+      )}
+
+      <footer className="credit">
+        Pieces by Toan Hoang (MIT license) · Engine: Stockfish (GPL-3.0)
+      </footer>
     </main>
   )
 }

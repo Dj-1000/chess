@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-type Mode = 'pass'
+type Mode = 'pass' | 'computer'
 
 const MODES: {
   id: 'computer' | 'friend' | 'pass'
@@ -14,8 +14,8 @@ const MODES: {
     id: 'computer',
     title: 'Play the computer',
     text: 'Six levels, from beginner to a full-strength engine.',
-    cta: 'Coming soon',
-    ready: false,
+    cta: 'Choose level',
+    ready: true,
     icon: (
       <>
         <rect x="3" y="4" width="18" height="12" rx="2" />
@@ -81,7 +81,7 @@ export default function Home({ onPlay }: { onPlay: (mode: Mode) => void }) {
             <button
               className="cta primary"
               disabled={!m.ready}
-              onClick={() => m.id === 'pass' && onPlay('pass')}
+              onClick={() => m.id !== 'friend' && onPlay(m.id)}
             >
               {m.cta}
             </button>
