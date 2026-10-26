@@ -9,6 +9,7 @@
   --btn-line: #3a464d;
   --sq-light: #ebe3cf;
   --sq-dark: #6f9a82;
+  --accent-ink: #10201a;
 }
 
 :root[data-theme='walnut'] {
@@ -21,6 +22,7 @@
   --btn-line: #4d3f33;
   --sq-light: #d9b98c;
   --sq-dark: #9a6a47;
+  --accent-ink: #2a1a0c;
 }
 
 html {
@@ -178,10 +180,10 @@ body {
 }
 
 .buttons {
-  display: flex;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
 }
-
 button {
   min-height: 2.75rem;
   padding: 0 1.25rem;
@@ -264,3 +266,102 @@ button {
     max-height: 10rem;
   }
 }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Home screen */
+.home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 4rem 4rem 2rem;
+}
+
+.home h1 {
+  margin: 0;
+  font-size: 3.2rem;
+  line-height: 1.1;
+  letter-spacing: -0.05rem;
+}
+
+.lead {
+  margin: 0.9rem 0 3rem;
+  color: var(--muted);
+  font-size: 1.15rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.75rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+
+.card h2 {
+  margin: 0.5rem 0 0;
+  font-size: 1.4rem;
+}
+
+.card p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.icon {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 0.9rem;
+  background: var(--btn);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta {
+  margin-top: auto;
+}
+
+.note {
+  margin: auto 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .home {
+    padding: 2rem 1.25rem;
+  }
+
+  .home h1 {
+    font-size: 2.4rem;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
