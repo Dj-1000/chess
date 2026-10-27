@@ -488,3 +488,80 @@ button:disabled {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Checkmate animation */
+@keyframes mate-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 0.15rem rgba(225, 60, 60, 0.9),
+      inset 0 0 0.8rem rgba(225, 60, 60, 0.4);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 0.15rem rgba(255, 90, 90, 1),
+      inset 0 0 2rem rgba(225, 60, 60, 0.95);
+  }
+}
+
+@keyframes mate-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes mate-fade {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.mate-banner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  padding: 1.1rem 2.2rem;
+  text-align: center;
+  color: #fff;
+  background: rgba(24, 10, 10, 0.88);
+  border: 2px solid rgba(225, 60, 60, 0.9);
+  border-radius: 1rem;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  animation:
+    mate-pop 0.45s ease-out both,
+    mate-fade 0.6s ease 3.2s forwards;
+}
+
+.mate-banner strong {
+  display: block;
+  font-size: 2rem;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
+}
+
+.mate-banner span {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1.1rem;
+  color: #f4c4c4;
+}
+
+/* Respect the "reduce motion" setting on people's devices */
+@media (prefers-reduced-motion: reduce) {
+  .mate-banner {
+    animation: none;
+  }
+}

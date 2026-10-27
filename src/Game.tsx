@@ -6,6 +6,7 @@ import { makePieces } from './pieces'
 import { Engine } from './engine'
 import type { Level } from './levels'
 import ConfirmDialog from './ConfirmDialog'
+import { THINK_MS } from './config'
 
 const tint = (c: string) => `linear-gradient(${c}, ${c})`
 const LAYER = {
@@ -79,32 +80,41 @@ export default function Game({
     }
   }, [vsComputer, level])
 
-  // When it is the computer's turn, ask the engine for a move
+  // When it is the computer's turn, ask the engine for a move,
+  // then wait a moment so it doesn't answer instantly
   useEffect(() => {
     if (!engine || game.isGameOver() || game.turn() === me) return
     let stale = false
+    let timer: number | undefined
+    const started = Date.now()
+    const pause = THINK_MS.min + Math.random() * (THINK_MS.max - THINK_MS.min)
     setThinking(true)
     engine
       .bestMove(game.fen())
       .then((uci) => {
         if (stale) return
-        try {
-          game.move({
-            from: uci.slice(0, 2),
-            to: uci.slice(2, 4),
-            promotion: uci[4],
-          })
-          setFen(game.fen())
-        } catch {
-          setEngineError('The engine returned a move that could not be played.')
-        }
-        setThinking(false)
+        const wait = Math.max(0, pause - (Date.now() - started))
+        timer = window.setTimeout(() => {
+          if (stale) return
+          try {
+            game.move({
+              from: uci.slice(0, 2),
+              to: uci.slice(2, 4),
+              promotion: uci[4],
+            })
+            setFen(game.fen())
+          } catch {
+            setEngineError('The engine returned a move that could not be played.')
+          }
+          setThinking(false)
+        }, wait)
       })
       .catch(() => {
         if (!stale) setThinking(false)
       })
     return () => {
       stale = true
+      window.clearTimeout(timer)
     }
   }, [fen, engine, gameId]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -208,11 +218,14 @@ export default function Game({
   const moves = game.history({ verbose: true })
   const last = moves[moves.length - 1]
 
+  const mated = game.isCheckmate()
+  let matedSquare: string | null = null
   if (game.inCheck()) {
     for (const row of game.board()) {
       for (const piece of row) {
         if (piece && piece.type === 'k' && piece.color === game.turn()) {
           add(piece.square, LAYER.check)
+          if (mated) matedSquare = piece.square
         }
       }
     }
@@ -233,6 +246,13 @@ export default function Game({
     squareStyles[sq] = {
       backgroundColor: baseColor(sq),
       backgroundImage: layers[sq].join(', '),
+    }
+  }
+
+  if (matedSquare) {
+    squareStyles[matedSquare] = {
+      ...squareStyles[matedSquare],
+      animation: 'mate-pulse 1.1s ease-in-out infinite',
     }
   }
 
@@ -266,6 +286,12 @@ export default function Game({
     if (game.inCheck()) status += ' (check)'
   }
 
+  const winnerText = vsComputer
+    ? game.turn() === me
+      ? 'The computer wins'
+      : 'You win!'
+    : `${game.turn() === 'w' ? 'Black' : 'White'} wins`
+
   const side = game.turn()
   const canUndo = vsComputer
     ? !thinking && moves.length > (me === 'w' ? 0 : 1)
@@ -286,7 +312,12 @@ export default function Game({
             darkSquareStyle: { backgroundColor: theme.dark },
           }}
         />
-
+        {mated && (
+          <div className="mate-banner" key={fen} role="status">
+            <strong>Checkmate</strong>
+            <span>{winnerText}</span>
+          </div>
+        )}
         {pending && (
           <div className="promo-overlay">
             <div className="promo-card" role="dialog" aria-label="Promote pawn">
