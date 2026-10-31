@@ -184,6 +184,7 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 0.6rem;
 }
+
 button {
   min-height: 2.75rem;
   padding: 0 1.25rem;
@@ -489,79 +490,116 @@ button:disabled {
   }
 }
 
-/* Checkmate animation */
-@keyframes mate-pulse {
-  0%,
-  100% {
-    box-shadow:
-      inset 0 0 0 0.15rem rgba(225, 60, 60, 0.9),
-      inset 0 0 0.8rem rgba(225, 60, 60, 0.4);
-  }
-  50% {
-    box-shadow:
-      inset 0 0 0 0.15rem rgba(255, 90, 90, 1),
-      inset 0 0 2rem rgba(225, 60, 60, 0.95);
-  }
+/* Checkmate: mark both kings, like on chess.com */
+.mate-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
 }
 
-@keyframes mate-pop {
+.sq-mark {
+  position: absolute;
+  width: 12.5%;
+  height: 12.5%;
+}
+
+.pill {
+  position: absolute;
+  right: -0.5rem;
+  top: -0.8rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.35);
+  transform-origin: right bottom;
+  animation: pill-life 2.6s ease both;
+}
+
+.win .pill {
+  color: #4f8f1f;
+}
+
+.lose .pill {
+  color: #d23030;
+}
+
+.dot {
+  position: absolute;
+  right: -0.35rem;
+  top: -0.45rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 0.1rem 0.35rem rgba(0, 0, 0, 0.35);
+  animation: dot-in 0.35s ease 2.3s both;
+}
+
+.win .dot {
+  background: #7fb83a;
+}
+
+.lose .dot {
+  background: #d23030;
+}
+
+.dot svg {
+  width: 70%;
+  height: 70%;
+  fill: #fff;
+}
+
+@keyframes pill-life {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.6);
+    transform: scale(0.4);
   }
-  60% {
+
+  12% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1.08);
+    transform: scale(1.1);
   }
+
+  18% {
+    transform: scale(1);
+  }
+
+  82% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
   100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-@keyframes mate-fade {
-  to {
     opacity: 0;
-    visibility: hidden;
+    transform: scale(0.4);
   }
 }
 
-.mate-banner {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 5;
-  transform: translate(-50%, -50%);
-  padding: 1.1rem 2.2rem;
-  text-align: center;
-  color: #fff;
-  background: rgba(24, 10, 10, 0.88);
-  border: 2px solid rgba(225, 60, 60, 0.9);
-  border-radius: 1rem;
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  animation:
-    mate-pop 0.45s ease-out both,
-    mate-fade 0.6s ease 3.2s forwards;
+@keyframes dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.mate-banner strong {
-  display: block;
-  font-size: 2rem;
-  letter-spacing: 0.08rem;
-  text-transform: uppercase;
-}
-
-.mate-banner span {
-  display: block;
-  margin-top: 0.3rem;
-  font-size: 1.1rem;
-  color: #f4c4c4;
-}
-
-/* Respect the "reduce motion" setting on people's devices */
+/* Less motion: skip the pop-ups and just show the small badges */
 @media (prefers-reduced-motion: reduce) {
-  .mate-banner {
+  .pill {
+    display: none;
+  }
+
+  .dot {
     animation: none;
   }
 }

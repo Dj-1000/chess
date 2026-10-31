@@ -219,17 +219,23 @@ export default function Game({
   const last = moves[moves.length - 1]
 
   const mated = game.isCheckmate()
-  let matedSquare: string | null = null
-  if (game.inCheck()) {
-    for (const row of game.board()) {
-      for (const piece of row) {
-        if (piece && piece.type === 'k' && piece.color === game.turn()) {
-          add(piece.square, LAYER.check)
-          if (mated) matedSquare = piece.square
-        }
-      }
+  const kings: Partial<Record<'w' | 'b', string>> = {}
+  for (const row of game.board()) {
+    for (const piece of row) {
+      if (piece && piece.type === 'k') kings[piece.color] = piece.square
     }
   }
+
+  const kingInCheck = kings[game.turn()]
+  if (kingInCheck && game.inCheck()) {
+    add(kingInCheck, mated ? tint('rgba(220, 50, 50, 0.8)') : LAYER.check)
+  }
+
+  if (mated) {
+    const winnerKing = kings[game.turn() === 'w' ? 'b' : 'w']
+    if (winnerKing) add(winnerKing, tint('rgba(120, 190, 70, 0.8)'))
+  }
+
   if (showLegal) {
     for (const m of legalTargets) {
       add(m.to, game.get(m.to) ? LAYER.ring : LAYER.dot)
@@ -246,13 +252,6 @@ export default function Game({
     squareStyles[sq] = {
       backgroundColor: baseColor(sq),
       backgroundImage: layers[sq].join(', '),
-    }
-  }
-
-  if (matedSquare) {
-    squareStyles[matedSquare] = {
-      ...squareStyles[matedSquare],
-      animation: 'mate-pulse 1.1s ease-in-out infinite',
     }
   }
 
@@ -312,10 +311,41 @@ export default function Game({
             darkSquareStyle: { backgroundColor: theme.dark },
           }}
         />
-        {mated && (
-          <div className="mate-banner" key={fen} role="status">
-            <strong>Checkmate</strong>
-            <span>{winnerText}</span>
+        {mated && kings.w && kings.b && (
+          <div
+            className="mate-layer"
+            role="status"
+            aria-label={`Checkmate. ${winnerText}`}
+          >
+            {(['w', 'b'] as const).map((color) => {
+              const sq = kings[color] as string
+              const won = color !== game.turn()
+              const file = sq.charCodeAt(0) - 97
+              const rank = Number(sq[1]) - 1
+              const col = orientation === 'white' ? file : 7 - file
+              const row = orientation === 'white' ? 7 - rank : rank
+              return (
+                <div
+                  key={color}
+                  className={`sq-mark ${won ? 'win' : 'lose'}`}
+                  style={{ left: `${col * 12.5}%`, top: `${row * 12.5}%` }}
+                >
+                  <span className="pill">{won ? 'Winner' : 'Checkmate'}</span>
+                  <span className="dot" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      {won ? (
+                        <path d="M3 18h18v2H3zM3 7l4.5 4L12 4l4.5 7L21 7l-2 10H5z" />
+                      ) : (
+                        <path
+                          d="M10 3v5H5v3h5v10h3V11h5V8h-5V3z"
+                          transform="rotate(70 12 12)"
+                        />
+                      )}
+                    </svg>
+                  </span>
+                </div>
+              )
+            })}
           </div>
         )}
         {pending && (
