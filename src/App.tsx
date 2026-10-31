@@ -5,6 +5,8 @@ import type { Level } from './levels'
 import Home from './Home'
 import Setup from './Setup'
 import Game from './Game'
+import Avatar from './Avatar'
+import { characterById, loadPlayerId } from './players'
 
 function loadTheme(): ThemeId {
   try {
@@ -25,6 +27,9 @@ export default function App() {
     null,
   )
   const [gameKey, setGameKey] = useState(0)
+  // Your character: picked at random the first time you open the game
+  const [playerId] = useState(loadPlayerId)
+  const me = characterById(playerId)
 
   useEffect(() => {
     document.title = APP_NAME
@@ -50,6 +55,10 @@ export default function App() {
           alt=""
         />
         <span>{APP_NAME}</span>
+        <div className="me">
+          <Avatar character={me} />
+          <span>{me.name}</span>
+        </div>
       </header>
 
       {screen === 'home' && (
@@ -80,6 +89,7 @@ export default function App() {
         <Game
           key={gameKey}
           mode="pass"
+          playerId={playerId}
           themeId={themeId}
           onThemeChange={setThemeId}
           onExit={goHome}
@@ -92,6 +102,7 @@ export default function App() {
           mode="computer"
           level={config.level}
           playerColor={config.color}
+          playerId={playerId}
           themeId={themeId}
           onThemeChange={setThemeId}
           onExit={goHome}

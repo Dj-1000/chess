@@ -63,7 +63,8 @@ body {
 .stage {
   --panel-w: clamp(18rem, 26vw, 30rem);
   --gap: 2rem;
-  --size: min(calc(100vh - 9rem),
+  --strip: 3rem;
+  --size: min(calc(100vh - 9rem - 2 * var(--strip) - 1rem),
       calc(100vw - var(--panel-w) - var(--gap) - 3rem));
   flex: 1;
   display: flex;
@@ -73,16 +74,24 @@ body {
   padding: 1.5rem;
 }
 
+.board-col {
+  flex: none;
+  width: var(--size);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .board {
   position: relative;
   flex: none;
-  width: var(--size);
+  width: 100%;
 }
 
 .panel {
   flex: none;
   width: var(--panel-w);
-  height: var(--size);
+  height: calc(var(--size) + 2 * var(--strip) + 1rem);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -251,7 +260,8 @@ button {
 /* Phones and narrow windows: board on top, panel below */
 @media (max-width: 900px) {
   .stage {
-    --size: min(calc(100vw - 2rem), calc(100vh - 9rem));
+    --size: min(calc(100vw - 2rem),
+        calc(100vh - 9rem - 2 * var(--strip) - 1rem));
     flex-direction: column;
     justify-content: flex-start;
     padding: 1rem;
@@ -602,4 +612,78 @@ button:disabled {
   .dot {
     animation: none;
   }
+}
+
+/* Player faces and names */
+.strip {
+  height: var(--strip);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 0.25rem;
+}
+
+.avatar {
+  display: block;
+  flex: none;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 0.15rem var(--line);
+}
+
+.avatar svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.strip.active .avatar {
+  box-shadow: 0 0 0 0.15rem var(--accent);
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.who strong {
+  font-size: 1.05rem;
+}
+
+.who span {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.strip-note {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.turn-dot {
+  margin-left: auto;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Your face in the page header */
+.me {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.me .avatar {
+  width: 2.2rem;
+  height: 2.2rem;
 }
