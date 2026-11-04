@@ -64,8 +64,10 @@ body {
   --panel-w: clamp(18rem, 26vw, 30rem);
   --gap: 2rem;
   --strip: 3rem;
-  --size: min(calc(100vh - 9rem - 2 * var(--strip) - 1rem),
-      calc(100vw - var(--panel-w) - var(--gap) - 3rem));
+  --size: min(
+    calc(100vh - 9rem - 2 * var(--strip) - 1rem),
+    calc(100vw - var(--panel-w) - var(--gap) - 3rem)
+  );
   flex: 1;
   display: flex;
   align-items: center;
@@ -193,7 +195,6 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 0.6rem;
 }
-
 button {
   min-height: 2.75rem;
   padding: 0 1.25rem;
@@ -260,8 +261,10 @@ button {
 /* Phones and narrow windows: board on top, panel below */
 @media (max-width: 900px) {
   .stage {
-    --size: min(calc(100vw - 2rem),
-        calc(100vh - 9rem - 2 * var(--strip) - 1rem));
+    --size: min(
+      calc(100vw - 2rem),
+      calc(100vh - 9rem - 2 * var(--strip) - 1rem)
+    );
     flex-direction: column;
     justify-content: flex-start;
     padding: 1rem;
@@ -570,21 +573,17 @@ button:disabled {
     opacity: 0;
     transform: scale(0.4);
   }
-
   12% {
     opacity: 1;
     transform: scale(1.1);
   }
-
   18% {
     transform: scale(1);
   }
-
   82% {
     opacity: 1;
     transform: scale(1);
   }
-
   100% {
     opacity: 0;
     transform: scale(0.4);
@@ -596,7 +595,6 @@ button:disabled {
     opacity: 0;
     transform: scale(0.3);
   }
-
   to {
     opacity: 1;
     transform: scale(1);
@@ -681,9 +679,86 @@ button:disabled {
   gap: 0.6rem;
   font-size: 1rem;
   font-weight: 600;
+  color: var(--text);
+}
+
+button.me {
+  min-height: 0;
+  padding: 0.3rem 0.7rem 0.3rem 0.3rem;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+button.me:hover {
+  background: var(--btn);
+  border-color: var(--btn-line);
+}
+
+.me small {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
 }
 
 .me .avatar {
   width: 2.2rem;
   height: 2.2rem;
+}
+
+/* Character picker */
+.choose-text {
+  margin: 0;
+  color: var(--muted);
+}
+
+.chars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  height: auto;
+  padding: 0.9rem 0.5rem;
+}
+
+.char .avatar {
+  width: 5rem;
+  height: 5rem;
+}
+
+.char.on {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.choose-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .chars {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.avatar {
+  background: #f2f2f2;
+}
+
+.avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.2);
+  transform-origin: 50% 30%;
 }

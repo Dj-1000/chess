@@ -1,13 +1,14 @@
-import { avatarSvg, type Character } from './characters'
+import type { Character } from './characters'
 
-// Draws a character's face. The artwork is our own SVG, so it is safe to inject.
+// A character's round portrait.
 export default function Avatar({ character }: { character: Character }) {
-    return (
-        <span
-            className="avatar"
-            role="img"
-            aria-label={character.name}
-            dangerouslySetInnerHTML={{ __html: avatarSvg(character) }}
-        />
-    )
+  return (
+    <span className="avatar">
+      <img
+        src={`${import.meta.env.BASE_URL}avatars/${character.image}`}
+        alt={character.name}
+        draggable={false}
+      />
+    </span>
+  )
 }
