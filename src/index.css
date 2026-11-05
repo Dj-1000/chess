@@ -631,12 +631,6 @@ button:disabled {
   box-shadow: 0 0 0 0.15rem var(--line);
 }
 
-.avatar svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
 .strip.active .avatar {
   box-shadow: 0 0 0 0.15rem var(--accent);
 }
@@ -750,6 +744,13 @@ button.me:hover {
   }
 }
 
+/* Picker: short title under each name */
+.char small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* Portraits: zoom in a little on the face */
 .avatar {
   background: #f2f2f2;
 }
@@ -761,4 +762,54 @@ button.me:hover {
   object-fit: cover;
   transform: scale(1.2);
   transform-origin: 50% 30%;
+}
+
+/* Captured pieces under each name */
+.stage {
+  --strip: 3.4rem;
+}
+
+.who-top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.captured {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.5rem;
+  margin-top: 0.15rem;
+}
+
+.cap-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.05rem 0.5rem 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: var(--sq-dark);
+}
+
+.cap-group {
+  display: inline-flex;
+  margin-right: 0.2rem;
+}
+
+.cap-group img {
+  display: block;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-left: -0.55rem;
+}
+
+.cap-group img:first-child {
+  margin-left: 0;
+}
+
+.lead {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent);
 }

@@ -307,6 +307,15 @@ export default function Game({
   const bottomColor: 'w' | 'b' = orientation === 'white' ? 'w' : 'b'
   const topColor: 'w' | 'b' = bottomColor === 'w' ? 'b' : 'w'
 
+  // Captured pieces, worked out from the move history (so Undo updates them)
+  const VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9 }
+  const capturedBy: Record<'w' | 'b', string[]> = { w: [], b: [] }
+  for (const m of moves) {
+    if (m.captured) capturedBy[m.color].push(m.captured)
+  }
+  const points = (c: 'w' | 'b') =>
+    capturedBy[c].reduce((sum, type) => sum + VALUE[type], 0)
+
   function renderStrip(color: 'w' | 'b') {
     const isMine = vsComputer ? color === me : color === 'w'
     const colorName = color === 'w' ? 'White' : 'Black'
@@ -316,12 +325,17 @@ export default function Game({
     } else {
       sub = isMine ? `Player 1 · ${colorName}` : `Player 2 · ${colorName}`
     }
+    const other = color === 'w' ? 'b' : 'w'
     return (
       <PlayerStrip
         character={isMine ? mine : opponent}
         sub={sub}
         active={!game.isGameOver() && game.turn() === color}
         note={vsComputer && !isMine && thinking ? 'Thinking…' : undefined}
+        captured={capturedBy[color]}
+        capturedColor={other}
+        pieceSet={theme.pieceSet}
+        lead={Math.max(0, points(color) - points(other))}
       />
     )
   }
@@ -329,87 +343,87 @@ export default function Game({
   return (
     <div className="stage">
       <div className="board-col">
-        {renderStrip(topColor)}
-        <div className="board">
-          <Chessboard
-            options={{
-              position: fen,
-              boardOrientation: orientation,
-              onPieceDrop,
-              onSquareClick,
-              squareStyles,
-              pieces,
-              lightSquareStyle: { backgroundColor: theme.light },
-              darkSquareStyle: { backgroundColor: theme.dark },
-            }}
-          />
-          {mated && kings.w && kings.b && (
-            <div
-              className="mate-layer"
-              role="status"
-              aria-label={`Checkmate. ${winnerText}`}
-            >
-              {(['w', 'b'] as const).map((color) => {
-                const sq = kings[color] as string
-                const won = color !== game.turn()
-                const file = sq.charCodeAt(0) - 97
-                const rank = Number(sq[1]) - 1
-                const col = orientation === 'white' ? file : 7 - file
-                const row = orientation === 'white' ? 7 - rank : rank
-                return (
-                  <div
-                    key={color}
-                    className={`sq-mark ${won ? 'win' : 'lose'}`}
-                    style={{ left: `${col * 12.5}%`, top: `${row * 12.5}%` }}
-                  >
-                    <span className="pill">{won ? 'Winner' : 'Checkmate'}</span>
-                    <span className="dot" aria-hidden="true">
-                      <svg viewBox="0 0 24 24">
-                        {won ? (
-                          <path d="M3 18h18v2H3zM3 7l4.5 4L12 4l4.5 7L21 7l-2 10H5z" />
-                        ) : (
-                          <path
-                            d="M10 3v5H5v3h5v10h3V11h5V8h-5V3z"
-                            transform="rotate(70 12 12)"
-                          />
-                        )}
-                      </svg>
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-          {pending && (
-            <div className="promo-overlay">
-              <div className="promo-card" role="dialog" aria-label="Promote pawn">
-                <p>Promote pawn to</p>
-                <div className="promo-choices">
-                  {PROMOTION_CHOICES.map((c) => (
-                    <button
-                      key={c.id}
-                      className="promo-btn"
-                      aria-label={`Promote to ${c.name}`}
-                      onClick={() =>
-                        makeMove(pending.from, pending.to, c.id.toLowerCase())
-                      }
-                    >
-                      <img
-                        src={`${import.meta.env.BASE_URL}pieces/${theme.pieceSet}/${side}${c.id}.png`}
-                        alt=""
-                        draggable={false}
-                      />
-                    </button>
-                  ))}
+      {renderStrip(topColor)}
+      <div className="board">
+        <Chessboard
+          options={{
+            position: fen,
+            boardOrientation: orientation,
+            onPieceDrop,
+            onSquareClick,
+            squareStyles,
+            pieces,
+            lightSquareStyle: { backgroundColor: theme.light },
+            darkSquareStyle: { backgroundColor: theme.dark },
+          }}
+        />
+        {mated && kings.w && kings.b && (
+          <div
+            className="mate-layer"
+            role="status"
+            aria-label={`Checkmate. ${winnerText}`}
+          >
+            {(['w', 'b'] as const).map((color) => {
+              const sq = kings[color] as string
+              const won = color !== game.turn()
+              const file = sq.charCodeAt(0) - 97
+              const rank = Number(sq[1]) - 1
+              const col = orientation === 'white' ? file : 7 - file
+              const row = orientation === 'white' ? 7 - rank : rank
+              return (
+                <div
+                  key={color}
+                  className={`sq-mark ${won ? 'win' : 'lose'}`}
+                  style={{ left: `${col * 12.5}%`, top: `${row * 12.5}%` }}
+                >
+                  <span className="pill">{won ? 'Winner' : 'Checkmate'}</span>
+                  <span className="dot" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      {won ? (
+                        <path d="M3 18h18v2H3zM3 7l4.5 4L12 4l4.5 7L21 7l-2 10H5z" />
+                      ) : (
+                        <path
+                          d="M10 3v5H5v3h5v10h3V11h5V8h-5V3z"
+                          transform="rotate(70 12 12)"
+                        />
+                      )}
+                    </svg>
+                  </span>
                 </div>
-                <button className="cancel" onClick={() => setPending(null)}>
-                  Cancel
-                </button>
+              )
+            })}
+          </div>
+        )}
+        {pending && (
+          <div className="promo-overlay">
+            <div className="promo-card" role="dialog" aria-label="Promote pawn">
+              <p>Promote pawn to</p>
+              <div className="promo-choices">
+                {PROMOTION_CHOICES.map((c) => (
+                  <button
+                    key={c.id}
+                    className="promo-btn"
+                    aria-label={`Promote to ${c.name}`}
+                    onClick={() =>
+                      makeMove(pending.from, pending.to, c.id.toLowerCase())
+                    }
+                  >
+                    <img
+                      src={`${import.meta.env.BASE_URL}pieces/${theme.pieceSet}/${side}${c.id}.png`}
+                      alt=""
+                      draggable={false}
+                    />
+                  </button>
+                ))}
               </div>
+              <button className="cancel" onClick={() => setPending(null)}>
+                Cancel
+              </button>
             </div>
-          )}
-        </div>
-        {renderStrip(bottomColor)}
+          </div>
+        )}
+      </div>
+      {renderStrip(bottomColor)}
       </div>
 
       <aside className="panel">
