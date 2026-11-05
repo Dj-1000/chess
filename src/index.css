@@ -646,7 +646,7 @@ button:disabled {
   font-size: 1.05rem;
 }
 
-.who span {
+.who-top span {
   font-size: 0.85rem;
   color: var(--muted);
 }
@@ -808,7 +808,7 @@ button.me:hover {
   margin-left: 0;
 }
 
-.lead {
+.cap-lead {
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--accent);

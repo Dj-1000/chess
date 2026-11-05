@@ -69,7 +69,7 @@ export default function PlayerStrip({
               ))}
             </span>
           )}
-          {lead > 0 && <span className="lead">+{lead}</span>}
+          {lead > 0 && <span className="cap-lead">+{lead}</span>}
         </div>
       </div>
       {note ? (
