@@ -73,6 +73,33 @@ export class Engine {
     return line.split(' ')[1]
   }
 
+  // How good is this position for the side to move? Returns centipawns
+  // (100 = about one pawn ahead). Checkmate scores are returned as +/-10000.
+  async evaluate(fen: string): Promise<number> {
+    await this.ready
+    if (this.active) {
+      this.send('stop')
+      await this.active
+    }
+    let score = 0
+    const onLine = (line: string) => {
+      const m = line.match(/score (cp|mate) (-?\d+)/)
+      if (m) {
+        const n = Number(m[2])
+        score = m[1] === 'cp' ? n : n > 0 ? 10000 : -10000
+      }
+    }
+    this.listeners.add(onLine)
+    const search = this.waitFor('bestmove')
+    this.active = search
+    this.send(`position fen ${fen}`)
+    this.send('go movetime 500')
+    await search
+    this.listeners.delete(onLine)
+    if (this.active === search) this.active = null
+    return score
+  }
+
   destroy() {
     this.listeners.clear()
     this.worker.terminate()

@@ -1,112 +1,188 @@
 export type Style = 'short' | 'long' | 'twin' | 'spiky' | 'bob' | 'ponytail'
+export type Gender = 'male' | 'female'
+export type CharacterId =
+    | 'goku'
+    | 'naruto'
+    | 'luffy'
+    | 'gojo'
+    | 'levi'
+    | 'nezuko'
+    | 'mikasa'
+    | 'yor'
 
 export type Character = {
-    id: string
+    id: CharacterId
     name: string
-    bg: string // background circle
+    anime: string
+    gender: Gender
+    bg: string
     skin: string
     hair: string
+    hairAccent?: string
     eye: string
     outfit: string
     style: Style
-    glasses?: boolean
-    ribbon?: string // ribbon color for twin tails
+    accessory?: 'none' | 'naruto-headband' | 'straw-hat' | 'gojo-blindfold' | 'nezuko-bamboo' | 'mikasa-scarf' | 'yor-ornaments'
+    marks?: 'naruto-whiskers'
 }
 
-// Original anime-style characters (not based on any existing show).
+// Stylized, original SVG fan-art interpretations for a personal portfolio project.
+// These are not official anime assets. Character names and visual identifiers belong
+// to their respective rights holders. Check permissions before public/commercial release.
 export const CHARACTERS: Character[] = [
-    { id: 'sora', name: 'Sora', bg: '#cfe8ff', skin: '#ffe0c8', hair: '#3b6fd6', eye: '#26c6c0', outfit: '#2c3e73', style: 'short' },
-    { id: 'hikari', name: 'Hikari', bg: '#ffe9b8', skin: '#ffe3cf', hair: '#f2c038', eye: '#e0703a', outfit: '#c9415a', style: 'long' },
-    { id: 'kaito', name: 'Kaito', bg: '#d8d2f5', skin: '#f3c9a6', hair: '#222838', eye: '#d9483e', outfit: '#3a3f5c', style: 'spiky' },
-    { id: 'mei', name: 'Mei', bg: '#ffdcec', skin: '#ffe0c8', hair: '#f585b0', eye: '#7a5cf0', outfit: '#8a4d9c', style: 'twin', ribbon: '#d93a5b' },
-    { id: 'ren', name: 'Ren', bg: '#dcf2e2', skin: '#f0c9a6', hair: '#9aa0ad', eye: '#3fae68', outfit: '#2f4b3d', style: 'bob', glasses: true },
-    { id: 'yuna', name: 'Yuna', bg: '#fde0cc', skin: '#e8b48c', hair: '#7a4627', eye: '#3a86dd', outfit: '#d0653a', style: 'ponytail' },
-    { id: 'haru', name: 'Haru', bg: '#ffdcc4', skin: '#c98d68', hair: '#d9532a', eye: '#f0b400', outfit: '#35527a', style: 'short' },
-    { id: 'akira', name: 'Akira', bg: '#e4dbfa', skin: '#ffe0c8', hair: '#7c40d8', eye: '#33bfe0', outfit: '#463a78', style: 'spiky' },
+    {
+        id: 'goku', name: 'Goku', anime: 'Dragon Ball', gender: 'male',
+        bg: '#d8eaff', skin: '#f4c9a8', hair: '#171923', eye: '#222b45',
+        outfit: '#ed7135', style: 'spiky',
+    },
+    {
+        id: 'naruto', name: 'Naruto', anime: 'Naruto', gender: 'male',
+        bg: '#ffe5bd', skin: '#f6cfad', hair: '#f3a51c', eye: '#4b8bcb',
+        outfit: '#e87527', style: 'spiky', accessory: 'naruto-headband',
+        marks: 'naruto-whiskers',
+    },
+    {
+        id: 'luffy', name: 'Luffy', anime: 'One Piece', gender: 'male',
+        bg: '#ffe2d5', skin: '#f4c9a8', hair: '#211b1b', eye: '#3b2925',
+        outfit: '#d94c42', style: 'short', accessory: 'straw-hat',
+    },
+    {
+        id: 'gojo', name: 'Gojo', anime: 'Jujutsu Kaisen', gender: 'male',
+        bg: '#e7e4ff', skin: '#f4d2bd', hair: '#e8edf5', eye: '#5a9ee8',
+        outfit: '#26334c', style: 'spiky', accessory: 'gojo-blindfold',
+    },
+    {
+        id: 'levi', name: 'Levi', anime: 'Attack on Titan', gender: 'male',
+        bg: '#dcebe3', skin: '#efd0b7', hair: '#34313a', eye: '#7b8b91',
+        outfit: '#405b50', style: 'bob',
+    },
+    {
+        id: 'nezuko', name: 'Nezuko', anime: 'Demon Slayer', gender: 'female',
+        bg: '#f8dce8', skin: '#f5d2b8', hair: '#30202a', hairAccent: '#d982a0',
+        eye: '#b84b72', outfit: '#b85d82', style: 'long', accessory: 'nezuko-bamboo',
+    },
+    {
+        id: 'mikasa', name: 'Mikasa', anime: 'Attack on Titan', gender: 'female',
+        bg: '#eadfd8', skin: '#edc6aa', hair: '#302a2b', eye: '#6c5149',
+        outfit: '#7d5146', style: 'bob', accessory: 'mikasa-scarf',
+    },
+    {
+        id: 'yor', name: 'Yor', anime: 'Spy x Family', gender: 'female',
+        bg: '#f7e4dc', skin: '#f4cdb5', hair: '#241c25', eye: '#a33d48',
+        outfit: '#782f3d', style: 'long', accessory: 'yor-ornaments',
+    },
 ]
 
 const shade = (hex: string, amount: number) => {
-    const n = parseInt(hex.slice(1), 16)
+    const n = Number.parseInt(hex.slice(1), 16)
     const ch = (v: number) => Math.max(0, Math.min(255, v + amount))
     const r = ch(n >> 16)
     const g = ch((n >> 8) & 255)
     const b = ch(n & 255)
-    return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)
+    return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`
 }
 
 function hairBack(c: Character) {
     const h = c.hair
-    const d = shade(h, -35)
     switch (c.style) {
         case 'long':
-            return `<path d="M17 48C17 20 34 11 50 11S83 20 83 48L86 92H14Z" fill="${h}"/><path d="M17 60L14 92H26L22 62Z" fill="${d}" opacity=".5"/>`
+            return `<path d="M16 51C14 22 33 9 50 9S86 22 84 51L91 100H9Z" fill="${h}"/>`
         case 'bob':
-            return `<path d="M17 50C17 22 33 11 50 11S83 22 83 50L81 72C70 77 30 77 19 72Z" fill="${h}"/>`
+            return `<path d="M16 50C16 22 33 10 50 10S84 22 84 50L82 78Q50 88 18 78Z" fill="${h}"/>`
         case 'twin':
-            return `<ellipse cx="50" cy="42" rx="33" ry="31" fill="${h}"/><path d="M20 44C6 52 6 78 14 90C20 80 24 66 26 52Z" fill="${h}"/><path d="M80 44C94 52 94 78 86 90C80 80 76 66 74 52Z" fill="${h}"/>`
+            return `<ellipse cx="50" cy="42" rx="34" ry="32" fill="${h}"/><path d="M19 43C5 55 7 82 15 91C23 78 25 61 26 49ZM81 43C95 55 93 82 85 91C77 78 75 61 74 49Z" fill="${h}"/>`
         case 'ponytail':
-            return `<ellipse cx="50" cy="42" rx="33" ry="31" fill="${h}"/><path d="M74 28C98 26 100 60 88 82C86 66 80 54 72 46Z" fill="${h}"/><path d="M76 30C84 32 86 38 84 44" stroke="${d}" stroke-width="2" fill="none"/>`
-        case 'spiky':
-            return `<ellipse cx="50" cy="42" rx="32" ry="30" fill="${h}"/>`
+            return `<ellipse cx="50" cy="42" rx="34" ry="32" fill="${h}"/><path d="M75 28C99 25 101 61 87 84C86 64 79 52 72 45Z" fill="${h}"/>`
         default:
-            return `<ellipse cx="50" cy="42" rx="32" ry="31" fill="${h}"/>`
+            return `<ellipse cx="50" cy="42" rx="34" ry="32" fill="${h}"/>`
     }
 }
 
 function hairFront(c: Character) {
     const h = c.hair
     const d = shade(h, -35)
-    const fringe = `<path d="M23 52C19 24 36 11 50 11S81 24 77 52C74 42 70 33 64 29L60 40L54 26L48 40L42 27L38 38L32 31C28 37 25 44 23 52Z" fill="${h}"/>`
-    const shine = `<path d="M34 22C40 16 50 14 58 16" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round" fill="none"/>`
-    const edge = `<path d="M30 33L32 31L38 38L42 27L48 40L54 26L60 40L64 29" stroke="${d}" stroke-width="1" fill="none" opacity=".5"/>`
-    let extra = ''
-    if (c.style === 'spiky') {
-        extra = `<path d="M24 28L26 6L38 20L46 0L56 18L68 2L74 24L80 20L77 34Z" fill="${h}"/>`
+
+    if (c.id === 'goku') {
+        return `<path d="M19 43L13 16L30 25L32 3L45 21L53 0L62 22L77 7L75 29L88 22L79 49L70 40L63 49L55 36L47 49L39 37L30 49Z" fill="${h}" stroke="${d}" stroke-width="1.2" stroke-linejoin="round"/>`
     }
-    if (c.style === 'twin' && c.ribbon) {
-        extra = `<path d="M20 46L10 40L12 52Z M20 46L28 38L30 50Z" fill="${c.ribbon}"/><circle cx="20" cy="46" r="3" fill="${shade(c.ribbon, -30)}"/><path d="M80 46L90 40L88 52Z M80 46L72 38L70 50Z" fill="${c.ribbon}"/><circle cx="80" cy="46" r="3" fill="${shade(c.ribbon, -30)}"/>`
+    if (c.id === 'naruto') {
+        return `<path d="M19 44L13 19L29 27L31 8L43 24L51 5L61 25L75 11L74 32L86 25L79 50L69 41L61 49L53 39L45 49L36 39L28 49Z" fill="${h}" stroke="${d}" stroke-width="1.1" stroke-linejoin="round"/>`
     }
-    if (c.style === 'ponytail') {
-        extra = `<circle cx="76" cy="31" r="3.5" fill="#e0405a"/>`
+    if (c.id === 'gojo') {
+        return `<path d="M17 45L15 19L29 25L31 5L43 22L51 2L61 23L75 8L73 30L86 22L79 49L68 39L60 48L52 37L44 48L35 38L27 48Z" fill="${h}" stroke="${d}" stroke-width="1.1" stroke-linejoin="round"/>`
     }
-    return extra + fringe + edge + shine
+
+    const fringe = `<path d="M17 52C15 24 33 10 50 10S85 24 83 52C76 39 71 33 64 29L59 42L53 27L47 41L40 28L35 40L28 32C23 39 20 46 17 52Z" fill="${h}"/>`
+    const shine = `<path d="M32 22Q44 13 57 17" stroke="#fff" stroke-opacity=".32" stroke-width="3" stroke-linecap="round" fill="none"/>`
+    const tips = c.hairAccent
+        ? `<path d="M17 59L13 93H25L28 57ZM83 58L87 93H75L72 57Z" fill="${c.hairAccent}"/>`
+        : ''
+    return tips + fringe + shine
+}
+
+function accessoryBehind(c: Character) {
+    if (c.accessory === 'straw-hat') {
+        return `<path d="M12 31Q50 20 88 31L91 38Q50 46 9 38Z" fill="#d9a64a" stroke="#8b612e" stroke-width="1.5"/><path d="M29 10Q50 2 71 10L78 32H22Z" fill="#e8bd61" stroke="#8b612e" stroke-width="1.5"/><path d="M23 25Q50 31 77 25L78 31Q50 38 22 31Z" fill="#b94a43"/>`
+    }
+    return ''
+}
+
+function accessoryFront(c: Character) {
+    switch (c.accessory) {
+        case 'naruto-headband':
+            return `<path d="M17 35Q50 27 83 35L82 45Q50 38 18 45Z" fill="#343a48" stroke="#202633" stroke-width="1.2"/><path d="M43 32L57 31L59 42L42 43Z" fill="#aeb6c1" stroke="#606b78" stroke-width="1"/><path d="M49 34L54 37L49 40L45 37Z" fill="none" stroke="#485462" stroke-width="1.4"/>`
+        case 'gojo-blindfold':
+            return `<path d="M17 47Q50 39 83 47L81 59Q50 53 19 59Z" fill="#171b28"/><path d="M20 48Q50 42 80 48" stroke="#596071" stroke-width="1.5" fill="none"/>`
+        case 'nezuko-bamboo':
+            return `<path d="M37 68Q50 62 63 68L62 76Q50 80 38 76Z" fill="#a9a06e" stroke="#625b3d" stroke-width="1.3"/><path d="M40 69L60 69M40 74L60 74" stroke="#645d40" stroke-width="1.2"/><path d="M37 66L33 63M63 66L67 63" stroke="#8e755b" stroke-width="2"/>`
+        case 'yor-ornaments':
+            return `<path d="M24 27L29 20L34 27L29 34Z M76 27L71 20L66 27L71 34Z" fill="#d9ad45" stroke="#9c742b" stroke-width="1.2"/><circle cx="29" cy="27" r="2" fill="#fff0bd"/><circle cx="71" cy="27" r="2" fill="#fff0bd"/>`
+        default:
+            return ''
+    }
 }
 
 function eye(cx: number, c: Character) {
+    if (c.accessory === 'gojo-blindfold') return ''
     return (
-        `<ellipse cx="${cx}" cy="54" rx="6.4" ry="8" fill="#fff"/>` +
-        `<ellipse cx="${cx}" cy="55" rx="5" ry="7" fill="${c.eye}"/>` +
-        `<ellipse cx="${cx}" cy="56" rx="3" ry="4.6" fill="#1a1626"/>` +
-        `<circle cx="${cx + 2}" cy="51.5" r="2.3" fill="#fff"/>` +
-        `<circle cx="${cx - 2}" cy="58" r="1.1" fill="#fff"/>` +
-        `<path d="M${cx - 8} 49.5Q${cx} 44 ${cx + 8} 49.5" stroke="#241c2e" stroke-width="2.4" stroke-linecap="round" fill="none"/>`
+        `<ellipse cx="${cx}" cy="54" rx="6.2" ry="7.8" fill="#fff"/>` +
+        `<ellipse cx="${cx}" cy="55" rx="4.8" ry="6.8" fill="${c.eye}"/>` +
+        `<ellipse cx="${cx}" cy="56" rx="2.8" ry="4.4" fill="#211b27"/>` +
+        `<circle cx="${cx + 1.8}" cy="51.5" r="2" fill="#fff"/>` +
+        `<path d="M${cx - 8} 49.5Q${cx} 45 ${cx + 8} 49.5" stroke="#28212b" stroke-width="2.2" stroke-linecap="round" fill="none"/>`
     )
 }
 
 export function avatarSvg(c: Character): string {
     const skinShade = shade(c.skin, -22)
-    const glasses = c.glasses
-        ? `<g fill="none" stroke="#3a3548" stroke-width="1.8"><circle cx="38" cy="54" r="10"/><circle cx="62" cy="54" r="10"/><path d="M48 54H52"/></g>`
+    const cheekMarks = c.marks === 'naruto-whiskers'
+        ? `<path d="M25 61L34 63M25 66L34 66M66 63L75 61M66 66L75 66" stroke="#a96f55" stroke-width="1.5" stroke-linecap="round"/>`
         : ''
+    const scarf = c.accessory === 'mikasa-scarf'
+        ? `<path d="M22 79Q50 72 78 79L87 100H13Z" fill="#9e403d"/><path d="M25 82Q50 88 75 82" stroke="#c56b61" stroke-width="2" fill="none"/>`
+        : ''
+    const faceCover = c.accessory === 'nezuko-bamboo' ? accessoryFront(c) : ''
+
     return (
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">` +
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="${c.name} from ${c.anime}">` +
         `<defs><clipPath id="clip-${c.id}"><circle cx="50" cy="50" r="50"/></clipPath></defs>` +
         `<g clip-path="url(#clip-${c.id})">` +
         `<rect width="100" height="100" fill="${c.bg}"/>` +
+        accessoryBehind(c) +
         hairBack(c) +
-        `<rect x="43" y="66" width="14" height="16" fill="${skinShade}"/>` +
-        `<path d="M10 100C12 82 28 76 50 76S88 82 90 100Z" fill="${c.outfit}"/>` +
+        `<path d="M10 103C13 82 29 77 50 77S87 82 90 103Z" fill="${c.outfit}"/>` +
         `<path d="M42 77L50 88L58 77Z" fill="#fff" opacity=".85"/>` +
-        `<path d="M26 48C26 30 36 22 50 22S74 30 74 48C74 64 64 78 50 78S26 64 26 48Z" fill="${c.skin}"/>` +
-        `<ellipse cx="31" cy="64" rx="5" ry="3" fill="#ff7f9c" opacity=".35"/>` +
-        `<ellipse cx="69" cy="64" rx="5" ry="3" fill="#ff7f9c" opacity=".35"/>` +
-        eye(38, c) +
-        eye(62, c) +
-        glasses +
-        `<path d="M33 43Q38 40 44 42M56 42Q62 40 67 43" stroke="${shade(c.hair, -40)}" stroke-width="2" stroke-linecap="round" fill="none"/>` +
-        `<path d="M50 64L49 67" stroke="${skinShade}" stroke-width="1.5" stroke-linecap="round"/>` +
-        `<path d="M45 70Q50 74 55 70" stroke="#b5504f" stroke-width="2" stroke-linecap="round" fill="none"/>` +
+        scarf +
+        `<rect x="43" y="67" width="14" height="15" fill="${skinShade}"/>` +
+        `<path d="M25 47C25 29 36 21 50 21S75 29 75 47C75 65 65 77 50 77S25 65 25 47Z" fill="${c.skin}"/>` +
+        `<ellipse cx="31" cy="64" rx="5" ry="3" fill="#ff8198" opacity=".32"/><ellipse cx="69" cy="64" rx="5" ry="3" fill="#ff8198" opacity=".32"/>` +
+        cheekMarks +
+        eye(38, c) + eye(62, c) +
+        `<path d="M50 63L49 66" stroke="${skinShade}" stroke-width="1.4" stroke-linecap="round"/>` +
+        (c.accessory === 'nezuko-bamboo' ? '' : `<path d="M45 70Q50 73 55 70" stroke="#a94f54" stroke-width="1.8" stroke-linecap="round" fill="none"/>`) +
         hairFront(c) +
+        (c.accessory === 'mikasa-scarf' ? '' : accessoryFront(c)) +
+        faceCover +
         `</g></svg>`
     )
 }
