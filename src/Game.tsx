@@ -517,6 +517,15 @@ export default function Game({
     }
   }
 
+  // Captured pieces, worked out from the move history (so Undo updates them)
+  const VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9 }
+  const capturedBy: Record<'w' | 'b', string[]> = { w: [], b: [] }
+  for (const m of moves) {
+    if (m.captured) capturedBy[m.color].push(m.captured)
+  }
+  const points = (c: 'w' | 'b') =>
+    capturedBy[c].reduce((sum, type) => sum + VALUE[type], 0)
+
   function renderStrip(color: 'w' | 'b') {
     const isMine = vsComputer ? color === me : color === 'w'
     const colorName = color === 'w' ? 'White' : 'Black'
@@ -562,7 +571,7 @@ export default function Game({
             <div
               className="mate-layer"
               role="status"
-              aria-label={`Checkmate. ${outcome?.headline ?? ''}`}
+              aria-label={`Checkmate. ${winnerText}`}
             >
               {(['w', 'b'] as const).map((color) => {
                 const sq = kings[color] as string

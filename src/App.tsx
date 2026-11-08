@@ -122,7 +122,10 @@ export default function App() {
               themeId={themeId}
               onThemeChange={setThemeId}
               onExit={goHome}
+<<<<<<< HEAD
               onNewGame={goHome}
+=======
+>>>>>>> f29e1ff214adeb50c48f31ac2155c2202a0a7b1b
             />
           )}
 
@@ -136,7 +139,10 @@ export default function App() {
               themeId={themeId}
               onThemeChange={setThemeId}
               onExit={goHome}
+<<<<<<< HEAD
               onNewGame={() => setScreen('setup')}
+=======
+>>>>>>> f29e1ff214adeb50c48f31ac2155c2202a0a7b1b
             />
           )}
         </>
