@@ -517,15 +517,6 @@ export default function Game({
     }
   }
 
-  // Captured pieces, worked out from the move history (so Undo updates them)
-  const VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9 }
-  const capturedBy: Record<'w' | 'b', string[]> = { w: [], b: [] }
-  for (const m of moves) {
-    if (m.captured) capturedBy[m.color].push(m.captured)
-  }
-  const points = (c: 'w' | 'b') =>
-    capturedBy[c].reduce((sum, type) => sum + VALUE[type], 0)
-
   function renderStrip(color: 'w' | 'b') {
     const isMine = vsComputer ? color === me : color === 'w'
     const colorName = color === 'w' ? 'White' : 'Black'
@@ -536,12 +527,17 @@ export default function Game({
       sub = isMine ? `Player 1 · ${colorName}` : `Player 2 · ${colorName}`
     }
     const other = color === 'w' ? 'b' : 'w'
+    const other = color === 'w' ? 'b' : 'w'
     return (
       <PlayerStrip
         character={isMine ? mine : opponent}
         sub={sub}
         active={!outcome && game.turn() === color}
         note={vsComputer && !isMine && thinking ? 'Thinking…' : undefined}
+        captured={capturedBy[color]}
+        capturedColor={other}
+        pieceSet={theme.pieceSet}
+        lead={Math.max(0, points(color) - points(other))}
         captured={capturedBy[color]}
         capturedColor={other}
         pieceSet={theme.pieceSet}
@@ -571,7 +567,7 @@ export default function Game({
             <div
               className="mate-layer"
               role="status"
-              aria-label={`Checkmate. ${winnerText}`}
+              aria-label={`Checkmate. ${outcome?.headline ?? ''}`}
             >
               {(['w', 'b'] as const).map((color) => {
                 const sq = kings[color] as string

@@ -64,10 +64,8 @@ body {
   --panel-w: clamp(18rem, 26vw, 30rem);
   --gap: 2rem;
   --strip: 3rem;
-  --size: min(
-    calc(100vh - 9rem - 2 * var(--strip) - 1rem),
-    calc(100vw - var(--panel-w) - var(--gap) - 3rem)
-  );
+  --size: min(calc(100vh - 9rem - 2 * var(--strip) - 1rem),
+      calc(100vw - var(--panel-w) - var(--gap) - 3rem));
   flex: 1;
   display: flex;
   align-items: center;
@@ -195,6 +193,7 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 0.6rem;
 }
+
 button {
   min-height: 2.75rem;
   padding: 0 1.25rem;
@@ -261,10 +260,8 @@ button {
 /* Phones and narrow windows: board on top, panel below */
 @media (max-width: 900px) {
   .stage {
-    --size: min(
-      calc(100vw - 2rem),
-      calc(100vh - 9rem - 2 * var(--strip) - 1rem)
-    );
+    --size: min(calc(100vw - 2rem),
+        calc(100vh - 9rem - 2 * var(--strip) - 1rem));
     flex-direction: column;
     justify-content: flex-start;
     padding: 1rem;
@@ -573,17 +570,21 @@ button:disabled {
     opacity: 0;
     transform: scale(0.4);
   }
+
   12% {
     opacity: 1;
     transform: scale(1.1);
   }
+
   18% {
     transform: scale(1);
   }
+
   82% {
     opacity: 1;
     transform: scale(1);
   }
+
   100% {
     opacity: 0;
     transform: scale(0.4);
@@ -595,6 +596,7 @@ button:disabled {
     opacity: 0;
     transform: scale(0.3);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -647,274 +649,292 @@ button:disabled {
 }
 
 .who-top span {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.strip-note {
-  margin-left: auto;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.turn-dot {
-  margin-left: auto;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-/* Your face in the page header */
-.me {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-button.me {
-  min-height: 0;
-  padding: 0.3rem 0.7rem 0.3rem 0.3rem;
-  border-radius: 999px;
-  background: transparent;
-  border: 1px solid transparent;
-}
-
-button.me:hover {
-  background: var(--btn);
-  border-color: var(--btn-line);
-}
-
-.me small {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--muted);
-}
-
-.me .avatar {
-  width: 2.2rem;
-  height: 2.2rem;
-}
-
-/* Character picker */
-.choose-text {
-  margin: 0;
-  color: var(--muted);
-}
-
-.chars {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-  margin: 0.5rem 0;
-}
-
-.char {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  height: auto;
-  padding: 0.9rem 0.5rem;
-}
-
-.char .avatar {
-  width: 5rem;
-  height: 5rem;
-}
-
-.char.on {
-  border-color: var(--accent);
-  border-width: 2px;
-}
-
-.choose-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-@media (max-width: 900px) {
-  .chars {
-    grid-template-columns: repeat(2, 1fr);
+  .who-top span {
+    font-size: 0.85rem;
+    color: var(--muted);
   }
-}
 
-/* Picker: short title under each name */
-.char small {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
+  .strip-note {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
 
-/* Portraits: zoom in a little on the face */
-.avatar {
-  background: #f2f2f2;
-}
+  .turn-dot {
+    margin-left: auto;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
 
-.avatar img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.2);
-  transform-origin: 50% 30%;
-}
+  /* Your face in the page header */
+  .me {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
 
-/* Captured pieces under each name */
-.stage {
-  --strip: 3.4rem;
-}
+  button.me {
+    min-height: 0;
+    padding: 0.3rem 0.7rem 0.3rem 0.3rem;
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid transparent;
+  }
 
-.who-top {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-}
+  button.me:hover {
+    background: var(--btn);
+    border-color: var(--btn-line);
+  }
 
-.captured {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 1.5rem;
-  margin-top: 0.15rem;
-}
+  .me small {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--muted);
+    color: var(--text);
+  }
 
-.cap-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.15rem;
-  padding: 0.05rem 0.5rem 0.05rem 0.35rem;
-  border-radius: 999px;
-  background: var(--sq-dark);
-}
+  button.me {
+    min-height: 0;
+    padding: 0.3rem 0.7rem 0.3rem 0.3rem;
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid transparent;
+  }
 
-.cap-group {
-  display: inline-flex;
-  margin-right: 0.2rem;
-}
+  button.me:hover {
+    background: var(--btn);
+    border-color: var(--btn-line);
+  }
 
-.cap-group img {
-  display: block;
-  width: 1.35rem;
-  height: 1.35rem;
-  margin-left: -0.55rem;
-}
+  .me small {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
 
-.cap-group img:first-child {
-  margin-left: 0;
-}
+  .me .avatar {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
 
-.cap-lead {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--accent);
-<<<<<<< HEAD
-}
+  /* Character picker */
+  .choose-text {
+    margin: 0;
+    color: var(--muted);
+  }
 
-/* Resign, draw offers, results and the en passant card */
-.buttons button:last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-}
+  .chars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+  }
 
-.notice {
-  margin: 0;
-  color: var(--accent);
-  font-size: 0.95rem;
-}
+  .char {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    height: auto;
+    padding: 0.9rem 0.5rem;
+  }
 
-.mv {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
+  .char .avatar {
+    width: 5rem;
+    height: 5rem;
+  }
 
-.info-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  min-height: 0;
-  padding: 0;
-  margin-left: 0.4rem;
-  border-radius: 50%;
-  border: 1px solid var(--accent);
-  background: transparent;
-  color: var(--accent);
-  font: italic 700 0.8rem Georgia, serif;
-  line-height: 1;
-}
+  .char.on {
+    border-color: var(--accent);
+    border-width: 2px;
+  }
 
-.mv .info-btn {
-  margin-left: 0;
-}
+  .choose-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
 
-.info-body p {
-  margin: 0 0 0.8rem;
-}
+  @media (max-width: 900px) {
+    .chars {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
 
-.dialog a {
-  color: var(--accent);
-}
+  /* Picker: short title under each name */
+  .char small {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
 
-.dialog.over {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
+  /* Portraits: zoom in a little on the face */
+  .avatar {
+    background: #f2f2f2;
+  }
 
-.over h2 {
-  margin: 0.8rem 0 0.2rem;
-  font-size: 1.9rem;
-}
+  .avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.2);
+    transform-origin: 50% 30%;
+  }
 
-.over p {
-  margin: 0 0 1.25rem;
-}
+  /* Captured pieces under each name */
+  .stage {
+    --strip: 3.4rem;
+  }
 
-.over-icon {
-  width: 4.5rem;
-  height: 4.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--btn);
-  color: var(--accent);
-}
+  .who-top {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
 
-.over-icon svg {
-  width: 55%;
-  height: 55%;
-  fill: currentColor;
-}
+  .captured {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 1.5rem;
+    margin-top: 0.15rem;
+  }
 
-.over.win .over-icon {
-  background: #7fb83a;
-  color: #fff;
-}
+  .cap-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.05rem 0.5rem 0.05rem 0.35rem;
+    border-radius: 999px;
+    background: var(--sq-dark);
+  }
 
-.over.loss .over-icon {
-  background: #d23030;
-  color: #fff;
-}
+  .cap-group {
+    display: inline-flex;
+    margin-right: 0.2rem;
+  }
 
-.over-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
+  .cap-group img {
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-left: -0.55rem;
+  }
 
-.link-btn {
-  background: transparent;
-  border-color: transparent;
-  color: var(--muted);
-=======
->>>>>>> f29e1ff214adeb50c48f31ac2155c2202a0a7b1b
-}
+  .cap-group img:first-child {
+    margin-left: 0;
+  }
+
+  .cap-lead {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Resign, draw offers, results and the en passant card */
+  .buttons button:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .notice {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+
+  .mv {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    min-height: 0;
+    padding: 0;
+    margin-left: 0.4rem;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    font: italic 700 0.8rem Georgia, serif;
+    line-height: 1;
+  }
+
+  .mv .info-btn {
+    margin-left: 0;
+  }
+
+  .info-body p {
+    margin: 0 0 0.8rem;
+  }
+
+  .dialog a {
+    color: var(--accent);
+  }
+
+  .dialog.over {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .over h2 {
+    margin: 0.8rem 0 0.2rem;
+    font-size: 1.9rem;
+  }
+
+  .over p {
+    margin: 0 0 1.25rem;
+  }
+
+  .over-icon {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--btn);
+    color: var(--accent);
+  }
+
+  .over-icon svg {
+    width: 55%;
+    height: 55%;
+    fill: currentColor;
+  }
+
+  .over.win .over-icon {
+    background: #7fb83a;
+    color: #fff;
+  }
+
+  .over.loss .over-icon {
+    background: #d23030;
+    color: #fff;
+  }
+
+  .over-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .link-btn {
+    background: transparent;
+    border-color: transparent;
+    color: var(--muted);
+  }

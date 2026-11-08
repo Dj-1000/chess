@@ -8,6 +8,8 @@ import Game from './Game'
 import Avatar from './Avatar'
 import ChooseCharacter from './ChooseCharacter'
 import { characterById, getSavedPlayerId, savePlayerId } from './players'
+import ChooseCharacter from './ChooseCharacter'
+import { characterById, getSavedPlayerId, savePlayerId } from './players'
 
 function loadTheme(): ThemeId {
   try {
@@ -31,6 +33,9 @@ export default function App() {
   // Your character. It is null on a first visit, until you choose one.
   const [playerId, setPlayerId] = useState<string | null>(getSavedPlayerId)
   const [choosing, setChoosing] = useState(false)
+  // Your character. It is null on a first visit, until you choose one.
+  const [playerId, setPlayerId] = useState<string | null>(getSavedPlayerId)
+  const [choosing, setChoosing] = useState(false)
 
   useEffect(() => {
     document.title = APP_NAME
@@ -49,6 +54,9 @@ export default function App() {
   const me = playerId ? characterById(playerId) : null
   // Changing character is only possible between games
   const canChange = screen === 'home' || screen === 'setup'
+  const me = playerId ? characterById(playerId) : null
+  // Changing character is only possible between games
+  const canChange = screen === 'home' || screen === 'setup'
 
   return (
     <main className="app">
@@ -59,6 +67,23 @@ export default function App() {
           alt=""
         />
         <span>{APP_NAME}</span>
+        {me &&
+          (canChange ? (
+            <button
+              className="me"
+              title="Change your character"
+              onClick={() => setChoosing(true)}
+            >
+              <Avatar character={me} />
+              <span>{me.name}</span>
+              <small>Change</small>
+            </button>
+          ) : (
+            <div className="me">
+              <Avatar character={me} />
+              <span>{me.name}</span>
+            </div>
+          ))}
         {me &&
           (canChange ? (
             <button
@@ -122,10 +147,7 @@ export default function App() {
               themeId={themeId}
               onThemeChange={setThemeId}
               onExit={goHome}
-<<<<<<< HEAD
-              onNewGame={goHome}
-=======
->>>>>>> f29e1ff214adeb50c48f31ac2155c2202a0a7b1b
+              a onNewGame={goHome}
             />
           )}
 
@@ -139,10 +161,7 @@ export default function App() {
               themeId={themeId}
               onThemeChange={setThemeId}
               onExit={goHome}
-<<<<<<< HEAD
               onNewGame={() => setScreen('setup')}
-=======
->>>>>>> f29e1ff214adeb50c48f31ac2155c2202a0a7b1b
             />
           )}
         </>
