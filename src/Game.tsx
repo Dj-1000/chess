@@ -527,17 +527,12 @@ export default function Game({
       sub = isMine ? `Player 1 · ${colorName}` : `Player 2 · ${colorName}`
     }
     const other = color === 'w' ? 'b' : 'w'
-    const other = color === 'w' ? 'b' : 'w'
     return (
       <PlayerStrip
         character={isMine ? mine : opponent}
         sub={sub}
         active={!outcome && game.turn() === color}
         note={vsComputer && !isMine && thinking ? 'Thinking…' : undefined}
-        captured={capturedBy[color]}
-        capturedColor={other}
-        pieceSet={theme.pieceSet}
-        lead={Math.max(0, points(color) - points(other))}
         captured={capturedBy[color]}
         capturedColor={other}
         pieceSet={theme.pieceSet}

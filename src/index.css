@@ -649,292 +649,271 @@ button:disabled {
 }
 
 .who-top span {
-  .who-top span {
-    font-size: 0.85rem;
-    color: var(--muted);
-  }
+  font-size: 0.85rem;
+  color: var(--muted);
+}
 
-  .strip-note {
-    margin-left: auto;
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
+.strip-note {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
 
-  .turn-dot {
-    margin-left: auto;
-    width: 0.7rem;
-    height: 0.7rem;
-    border-radius: 50%;
-    background: var(--accent);
-  }
+.turn-dot {
+  margin-left: auto;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
 
-  /* Your face in the page header */
-  .me {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text);
-  }
+/* Your face in the page header */
+.me {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
 
-  button.me {
-    min-height: 0;
-    padding: 0.3rem 0.7rem 0.3rem 0.3rem;
-    border-radius: 999px;
-    background: transparent;
-    border: 1px solid transparent;
-  }
+button.me {
+  min-height: 0;
+  padding: 0.3rem 0.7rem 0.3rem 0.3rem;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid transparent;
+}
 
-  button.me:hover {
-    background: var(--btn);
-    border-color: var(--btn-line);
-  }
+button.me:hover {
+  background: var(--btn);
+  border-color: var(--btn-line);
+}
 
-  .me small {
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--muted);
-    color: var(--text);
-  }
+.me small {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+}
 
-  button.me {
-    min-height: 0;
-    padding: 0.3rem 0.7rem 0.3rem 0.3rem;
-    border-radius: 999px;
-    background: transparent;
-    border: 1px solid transparent;
-  }
+.me .avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+}
 
-  button.me:hover {
-    background: var(--btn);
-    border-color: var(--btn-line);
-  }
+/* Character picker */
+.choose-text {
+  margin: 0;
+  color: var(--muted);
+}
 
-  .me small {
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--muted);
-  }
+.chars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
 
-  .me .avatar {
-    width: 2.2rem;
-    height: 2.2rem;
-  }
+.char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  height: auto;
+  padding: 0.9rem 0.5rem;
+}
 
-  /* Character picker */
-  .choose-text {
-    margin: 0;
-    color: var(--muted);
-  }
+.char .avatar {
+  width: 5rem;
+  height: 5rem;
+}
 
+.char.on {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.choose-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
   .chars {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
-    margin: 0.5rem 0;
+    grid-template-columns: repeat(2, 1fr);
   }
+}
 
-  .char {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    height: auto;
-    padding: 0.9rem 0.5rem;
-  }
+/* Picker: short title under each name */
+.char small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
 
-  .char .avatar {
-    width: 5rem;
-    height: 5rem;
-  }
+/* Portraits: zoom in a little on the face */
+.avatar {
+  background: #f2f2f2;
+}
 
-  .char.on {
-    border-color: var(--accent);
-    border-width: 2px;
-  }
+.avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.2);
+  transform-origin: 50% 30%;
+}
 
-  .choose-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
+/* Captured pieces under each name */
+.stage {
+  --strip: 3.4rem;
+}
 
-  @media (max-width: 900px) {
-    .chars {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
+.who-top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
 
-  /* Picker: short title under each name */
-  .char small {
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
+.captured {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.5rem;
+  margin-top: 0.15rem;
+}
 
-  /* Portraits: zoom in a little on the face */
-  .avatar {
-    background: #f2f2f2;
-  }
+.cap-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.05rem 0.5rem 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: var(--sq-dark);
+}
 
-  .avatar img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(1.2);
-    transform-origin: 50% 30%;
-  }
+.cap-group {
+  display: inline-flex;
+  margin-right: 0.2rem;
+}
 
-  /* Captured pieces under each name */
-  .stage {
-    --strip: 3.4rem;
-  }
+.cap-group img {
+  display: block;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-left: -0.55rem;
+}
 
-  .who-top {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-  }
+.cap-group img:first-child {
+  margin-left: 0;
+}
 
-  .captured {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 1.5rem;
-    margin-top: 0.15rem;
-  }
+.cap-lead {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent);
+}
 
-  .cap-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.15rem;
-    padding: 0.05rem 0.5rem 0.05rem 0.35rem;
-    border-radius: 999px;
-    background: var(--sq-dark);
-  }
+/* Resign, draw offers, results and the en passant card */
+.buttons button:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
 
-  .cap-group {
-    display: inline-flex;
-    margin-right: 0.2rem;
-  }
+.notice {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
 
-  .cap-group img {
-    display: block;
-    width: 1.35rem;
-    height: 1.35rem;
-    margin-left: -0.55rem;
-  }
+.mv {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
 
-  .cap-group img:first-child {
-    margin-left: 0;
-  }
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-height: 0;
+  padding: 0;
+  margin-left: 0.4rem;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font: italic 700 0.8rem Georgia, serif;
+  line-height: 1;
+}
 
-  .cap-lead {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
+.mv .info-btn {
+  margin-left: 0;
+}
 
-  /* Resign, draw offers, results and the en passant card */
-  .buttons button:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
+.info-body p {
+  margin: 0 0 0.8rem;
+}
 
-  .notice {
-    margin: 0;
-    color: var(--accent);
-    font-size: 0.95rem;
-  }
+.dialog a {
+  color: var(--accent);
+}
 
-  .mv {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
+.dialog.over {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
 
-  .info-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.25rem;
-    height: 1.25rem;
-    min-height: 0;
-    padding: 0;
-    margin-left: 0.4rem;
-    border-radius: 50%;
-    border: 1px solid var(--accent);
-    background: transparent;
-    color: var(--accent);
-    font: italic 700 0.8rem Georgia, serif;
-    line-height: 1;
-  }
+.over h2 {
+  margin: 0.8rem 0 0.2rem;
+  font-size: 1.9rem;
+}
 
-  .mv .info-btn {
-    margin-left: 0;
-  }
+.over p {
+  margin: 0 0 1.25rem;
+}
 
-  .info-body p {
-    margin: 0 0 0.8rem;
-  }
+.over-icon {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--btn);
+  color: var(--accent);
+}
 
-  .dialog a {
-    color: var(--accent);
-  }
+.over-icon svg {
+  width: 55%;
+  height: 55%;
+  fill: currentColor;
+}
 
-  .dialog.over {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+.over.win .over-icon {
+  background: #7fb83a;
+  color: #fff;
+}
 
-  .over h2 {
-    margin: 0.8rem 0 0.2rem;
-    font-size: 1.9rem;
-  }
+.over.loss .over-icon {
+  background: #d23030;
+  color: #fff;
+}
 
-  .over p {
-    margin: 0 0 1.25rem;
-  }
+.over-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
 
-  .over-icon {
-    width: 4.5rem;
-    height: 4.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--btn);
-    color: var(--accent);
-  }
-
-  .over-icon svg {
-    width: 55%;
-    height: 55%;
-    fill: currentColor;
-  }
-
-  .over.win .over-icon {
-    background: #7fb83a;
-    color: #fff;
-  }
-
-  .over.loss .over-icon {
-    background: #d23030;
-    color: #fff;
-  }
-
-  .over-actions {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  .link-btn {
-    background: transparent;
-    border-color: transparent;
-    color: var(--muted);
-  }
+.link-btn {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
